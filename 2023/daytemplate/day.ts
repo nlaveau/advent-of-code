@@ -10,7 +10,7 @@ let testOnly = true;
 type PbInput = string[][];
 
 function readInput(file: string): PbInput {
-    let input = fs.readFileSync(file).toString().split("\n");
+    let input = fs.readFileSync(file).toString().split("\n").map(line => line.replace('\r', ''));
     if (input[input.length - 1] === "") {
         input = input.slice(0, -1);
     }
@@ -18,9 +18,9 @@ function readInput(file: string): PbInput {
     return input.map((line) => line.split(""));
 }
 
-function part1Solver(dataTest: PbInput): any {}
+function part1Solver(input: PbInput): any { }
 
-function part2Solver(dataTest: PbInput): any {}
+function part2Solver(input: PbInput): any { }
 
 dayRunner(
     {
