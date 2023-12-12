@@ -58,6 +58,14 @@ export class Pos2D {
     loop(size: Pos2D) {
         return this.apply1((z, sz) => ((z % sz) + sz) % sz, size);
     }
+
+    l1norm(): number {
+        return Math.abs(this.x) + Math.abs(this.y);
+    }
+
+    l2norm(): number {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
 }
 
 export function pos2D(x: number, y: number) {
