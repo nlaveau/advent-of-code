@@ -155,6 +155,14 @@ export class Array2D<T> {
         return this.array;
     }
 
+    public getRow(rowIndex: number) {
+        return Array2D.extractRow(this.array, rowIndex);
+    }
+
+    public getColumn(colIndex: number) {
+        return Array2D.extractColumn(this.array, colIndex);
+    }
+
     public set(point: Pos2D, value: T) {
         this.array[point.y][point.x] = value;
     }
