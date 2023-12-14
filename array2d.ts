@@ -1,4 +1,4 @@
-import { min, max } from "lodash";
+import { min, max, sum } from "lodash";
 
 export class Pos2D {
     constructor(public x: number, public y: number) {};
@@ -59,6 +59,7 @@ export function pos2D(x: number, y: number) {
 
 export type Endo<T> = (input: T, pos: Pos2D, array2d: Array2D<T>) => T;
 export type Morphism<T, U> = (input: T, pos: Pos2D, array2d: Array2D<T>) => U;
+export type LineMorphisn<T, U> = (inputLine: T[], index: number, array2d: Array2D<T>) => U[]
 export type Operation<T> = (input: T, pos: Pos2D, array2d: Array2D<T>) => any;
 export type Predicate<T> = Morphism<T, boolean>;
 
@@ -67,7 +68,7 @@ export type Neighbourhood = (center: Pos2D) => Pos2D[];
 export class Area2D {
     static readonly N4 = [pos2D(0,-1), pos2D(0,1), pos2D(-1,0), pos2D(1,0)];
     static readonly N8 = [-1,0,1].flatMap(offset_y => [-1,0,1].map(offset_x => pos2D(offset_x,offset_y))).filter(p => p.x !== 0 || p.y !== 0);
-    
+
     public static neighbourhood(center: Pos2D, neighbourhood: Pos2D[]) {
         return neighbourhood.map(p => center.plus(p));
     }
@@ -99,6 +100,18 @@ export class Array2D<T> {
         return (i >= m && i < M);
     }
 
+    private static extractRow<T>(array: T[][], rowIndex: number) {
+        return array[rowIndex];
+    }
+
+    private static extractColumn<T>(array: T[][], colIndex: number) {
+        return array.map(row => row[colIndex]);
+    }
+
+    static transposeArray<T>(array: T[][]) {
+        return array[0].map((_, i) => Array2D.extractColumn(array, i));
+    }
+
     public isInside(point: Pos2D) {
         return this.isInRange(point.x, 0, this.size.x) && this.isInRange(point.y, 0, this.size.y);
     }
@@ -121,6 +134,18 @@ export class Array2D<T> {
 
     public map<U>(operation: Morphism<T, U>) {
         return new Array2D(this.array.map((line, j) => line.map((cell, i) => operation(cell, new Pos2D(i, j), this))));
+    }
+
+    public mapRow<U>(operation: LineMorphisn<T, U>) {
+        return new Array2D(this.array.map((line, j) => operation(line, j, this)))
+    }
+
+    public mapColumn<U>(operation: LineMorphisn<T, U>) {
+        return new Array2D(Array2D.transposeArray(Array2D.transposeArray(this.array).map((line, j) => operation(line, j, this))));
+    }
+
+    public transpose() {
+        return new Array2D(Array2D.transposeArray(this.array));
     }
 
     public forEach<U>(operation: Operation<T>) {
@@ -163,6 +188,10 @@ export class Array2D<T> {
 
     public max() {
         return max(this.array.flatMap(x => x));
+    }
+
+    public sum() {
+        return sum(this.array.flatMap(x => x));
     }
 
     public neighbourhood(center: Pos2D, neighbourhood: Pos2D[]) {
