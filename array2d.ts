@@ -267,4 +267,19 @@ export class Array2D<T> {
     public asLoggable(separator: string = ""): string[] {
         return this.array.map((line) => line.join(separator));
     }
+
+    public floodFill(init: Pos2D, fillValue: T, isClose: Predicate<T>, neighbourhood: Pos2D[] = Area2D.N4) {
+        let todo: Pos2D[] = [init];
+        let done: Pos2D[] = [];
+
+        while (todo.length > 0) {
+            let p = todo.pop();
+            if (p !== undefined) {
+                done.push(p);
+                this.set(p, fillValue);
+                todo = todo.concat(this.neighbourhood(p, neighbourhood).filter((q) => isClose(this.get(q), q, this)).filter(q => done.every(r => !r.equals(q))));
+            }
+        }
+        return this;
+    }
 }
