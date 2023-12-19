@@ -30,3 +30,14 @@ export function directionFromInt(intDir: number): Direction {
         default: throw intDir + ' is not a valid direction.';
     }
 }
+
+export function directionFromPos2D(pos: Pos2D): Direction {
+    if (pos.x === 0) {
+        if (pos.y > 0) return "v";
+        else return "^";
+    }
+    else {
+        if (pos.x > 0) return ">";
+        else return "<";
+    }
+}
